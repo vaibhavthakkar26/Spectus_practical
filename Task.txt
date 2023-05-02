@@ -1,0 +1,17 @@
+point 01 :need to set a loading in the center,
+
+Point 02 :Implement pagination when the list is scrolled. The user reaches the end of the
+page, API will be called with increment page number and new data will be
+appended in the list. :
+
+solution
+https://stackoverflow.com/questions/63501757/check-if-user-reached-the-bottom-of-the-page-react
+
+
+Point 03 : After every 10 seconds, call the same API with incremented page value.
+For example, the initial API URL will have page=0. After 10 seconds call the same
+API with page=1 and override the new data on the screen. So on after every 10
+seconds.
+
+
+point 04 : test Case

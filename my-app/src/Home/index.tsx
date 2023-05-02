@@ -1,30 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getApiDataHandler } from '../service/api.service';
-import { Box } from '@mui/material';
-import Loader from '../Comman/Loader';
 import DataTable from '../components/DataTable';
 import { Story } from '../components/DataTable/DataTable.interface';
+import Loader from '../Comman/Loader';
+import { Box } from '@mui/material';
 
 function Home() {
     const [loaderFlag,setLoaderFlage] = useState<boolean>(false);
     const [apiData,setApiData] = useState<Story[]>([]);
+    const count = useRef(0);
 
     useEffect(()=>{
-       dataHandler();
+       dataHandler("story",count.current);
     },[]);
 
-    const dataHandler = async () =>{
+    useEffect(()=>{
+    window.addEventListener('scroll', scrollHandler);
+    return () => window.removeEventListener('scroll', scrollHandler);
+    })
+
+
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        count.current = count.current + 1;
+        dataHandler("story",count.current);
+      }, 10000);
+      return () => clearInterval(intervalId);
+    }, [count.current]);
+
+    const dataHandler = async (story:string,page:number) =>{
         setLoaderFlage(true);
-        const data = await getApiDataHandler("story",0);
+        const data = await getApiDataHandler(story,page);
         setApiData(data.hits);
         setLoaderFlage(false);
     };
 
-  return (
-    <Box>
-      <DataTable data={apiData} loading={loaderFlag}/>
-    </Box>
-  )
+    const scrollHandler = () =>{
+      if ((window.innerHeight + Math.round(window.scrollY)) == document.body.offsetHeight) {
+        count.current = count.current + 1;
+        dataHandler("story",count.current);
+      }
+    };
+
+  return loaderFlag ? <Box textAlign={'center'}> <Loader/> </Box> :  <DataTable data={apiData}/>
 }
 
 export default Home

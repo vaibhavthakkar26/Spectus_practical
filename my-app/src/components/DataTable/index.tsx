@@ -9,7 +9,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Story } from './DataTable.interface';
 import { tableRowData } from '../../utils/helper';
-import Loader from '../../Comman/Loader';
 import moment from 'moment';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -34,7 +33,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 interface props {
     data: Story[];
-    loading: boolean
 }
 
 export default function DataTable (props:props) {
@@ -44,9 +42,9 @@ export default function DataTable (props:props) {
         <TableHead>
           <TableRow>
             {
-              tableRowData.map((result)=>{
+              tableRowData.map((result,index)=>{
                 return (
-                  <StyledTableCell align={result.position}>{result.name}</StyledTableCell>
+                  <StyledTableCell key={`table_Cell${index}`} align={result.position}>{result.name}</StyledTableCell>
                 )
               })
             }
@@ -54,17 +52,16 @@ export default function DataTable (props:props) {
         </TableHead>
         <TableBody>
           {
-            props.loading && <Loader/>  
+             props.data.map((row,index) => (
+              <StyledTableRow key={`Story_${index}`}>
+                <StyledTableCell align="left" component="th" scope="row">
+                  {row.title}
+                </StyledTableCell>
+                <StyledTableCell align="center">{row.author}</StyledTableCell>
+                <StyledTableCell align="center">{moment(row.created_at).format('DD-MM-YYYY')}</StyledTableCell>
+              </StyledTableRow>
+            ))
           }
-          {props.data.map((row) => (
-            <StyledTableRow key={row.points}>
-              <StyledTableCell align="left" component="th" scope="row">
-                {row.title}
-              </StyledTableCell>
-              <StyledTableCell align="center">{row.author}</StyledTableCell>
-              <StyledTableCell align="center">{moment(row.created_at).format('DD-MM-YYYY')}</StyledTableCell>
-            </StyledTableRow>
-          ))}
         </TableBody>
       </Table>
     </TableContainer>
