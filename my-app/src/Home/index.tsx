@@ -1,48 +1,58 @@
-import { useEffect, useRef, useState } from 'react';
-import { getApiDataHandler } from '../service/api.service';
-import DataTable from '../components/DataTable';
-import { Story } from '../components/DataTable/DataTable.interface';
-import Loader from '../Comman/Loader';
-import { Box } from '@mui/material';
+import { useEffect, useRef, useState } from "react";
+import { getApiDataHandler } from "../service/api.service";
+import DataTable from "../components/DataTable";
+import { Story } from "../components/DataTable/DataTable.interface";
+import Loader from "../Comman/Loader";
+import { Box } from "@mui/material";
 
 function Home() {
-    const [loaderFlag,setLoaderFlage] = useState<boolean>(false);
-    const [apiData,setApiData] = useState<Story[]>([]);
-    const count = useRef(0);
+  const [loaderFlag, setLoaderFlage] = useState<boolean>(false);
+  const [apiData, setApiData] = useState<Story[]>([]);
+  const count = useRef(0);
 
-    useEffect(()=>{
-       dataHandler("story",count.current);
-    },[]);
+  useEffect(() => {
+    dataHandler("story", count.current);
+  }, []);
 
-    useEffect(()=>{
-    window.addEventListener('scroll', scrollHandler);
-    return () => window.removeEventListener('scroll', scrollHandler);
-    })
+  useEffect(() => {
+    window.addEventListener("scroll", scrollHandler);
+    return () => window.removeEventListener("scroll", scrollHandler);
+  });
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      count.current = count.current + 1;
+      dataHandler("story", count.current);
+    }, 10000);
+    return () => clearInterval(intervalId);
+  }, [count.current]);
 
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-        count.current = count.current + 1;
-        dataHandler("story",count.current);
-      }, 10000);
-      return () => clearInterval(intervalId);
-    }, [count.current]);
+  //function to handle the api call
+  const dataHandler = async (story: string, page: number) => {
+    setLoaderFlage(true);
+    const data = await getApiDataHandler(story, page);
+    setApiData(data.hits);
+    setLoaderFlage(false);
+  };
 
-    const dataHandler = async (story:string,page:number) =>{
-        setLoaderFlage(true);
-        const data = await getApiDataHandler(story,page);
-        setApiData(data.hits);
-        setLoaderFlage(false);
-    };
+  // function to handle the scroll functionality
+  const scrollHandler = () => {
+    if (
+      window.innerHeight + Math.round(window.scrollY) ==
+      document.body.offsetHeight
+    ) {
+      count.current = count.current + 1;
+      dataHandler("story", count.current);
+    }
+  };
 
-    const scrollHandler = () =>{
-      if ((window.innerHeight + Math.round(window.scrollY)) == document.body.offsetHeight) {
-        count.current = count.current + 1;
-        dataHandler("story",count.current);
-      }
-    };
-
-  return loaderFlag ? <Box textAlign={'center'}> <Loader/> </Box> :  <DataTable data={apiData}/>
+  return loaderFlag ? (
+    <Box textAlign={"center"}>
+      <Loader />
+    </Box>
+  ) : (
+    <DataTable data={apiData} />
+  );
 }
 
-export default Home
+export default Home;
