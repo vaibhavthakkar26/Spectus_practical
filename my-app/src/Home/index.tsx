@@ -29,22 +29,25 @@ function Home() {
 
   //function to handle the api call
   const dataHandler = async (story: string, page: number) => {
-    setLoaderFlage(true);
+    // setLoaderFlage(true);
     const data = await getApiDataHandler(story, page);
-    setApiData(data.hits);
-    setLoaderFlage(false);
+    setApiData((prevData) => [...prevData,...data.hits]);
+    // setLoaderFlage(false);
   };
 
   // function to handle the scroll functionality
   const scrollHandler = () => {
-    if (
-      window.innerHeight + Math.round(window.scrollY) ==
-      document.body.offsetHeight
-    ) {
+    // window.innerHeight + Math.round(window.scrollY) ==
+    // document.body.offsetHeight
+    // const scrollEnd = (window.innerHeight + window.pageXOffset) >= document.body.offsetHeight - 2;
+    // console.log
+    if (window.innerHeight + Math.round(window.scrollY) == document.body.offsetHeight) {
       count.current = count.current + 1;
       dataHandler("story", count.current);
     }
   };
+
+  console.log("apiData",apiData);
 
   return loaderFlag ? (
     <Box textAlign={"center"}>
