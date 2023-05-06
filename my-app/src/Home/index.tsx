@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getApiDataHandler } from "../service/api.service";
 import DataTable from "../components/DataTable";
 import { Story } from "../components/DataTable/DataTable.interface";
-import Loader from "../Comman/Loader";
-import { Box } from "@mui/material";
 
 function Home() {
   const [loaderFlag, setLoaderFlage] = useState<boolean>(false);
@@ -29,33 +27,21 @@ function Home() {
 
   //function to handle the api call
   const dataHandler = async (story: string, page: number) => {
-    // setLoaderFlage(true);
+    setLoaderFlage(true);
     const data = await getApiDataHandler(story, page);
     setApiData((prevData) => [...prevData,...data.hits]);
-    // setLoaderFlage(false);
+    setLoaderFlage(false);
   };
 
   // function to handle the scroll functionality
   const scrollHandler = () => {
-    // window.innerHeight + Math.round(window.scrollY) ==
-    // document.body.offsetHeight
-    // const scrollEnd = (window.innerHeight + window.pageXOffset) >= document.body.offsetHeight - 2;
-    // console.log
-    if (window.innerHeight + Math.round(window.scrollY) == document.body.offsetHeight) {
+    if(window.innerHeight + document.documentElement.scrollTop +1 >= document.documentElement.scrollHeight){  
       count.current = count.current + 1;
       dataHandler("story", count.current);
     }
   };
-
-  console.log("apiData",apiData);
-
-  return loaderFlag ? (
-    <Box textAlign={"center"}>
-      <Loader />
-    </Box>
-  ) : (
-    <DataTable data={apiData} />
-  );
+  
+  return <DataTable data={apiData} loading={loaderFlag}/>
 }
 
 export default Home;
