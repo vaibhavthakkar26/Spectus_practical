@@ -29,7 +29,7 @@ function Home() {
   const dataHandler = async (story: string, page: number) => {
     setLoaderFlage(true);
     const data = await getApiDataHandler(story, page);
-    setApiData((prevData) => [...prevData,...data.hits]);
+    setApiData((prevData) => [...prevData,...data?.hits]);
     setLoaderFlage(false);
   };
 
